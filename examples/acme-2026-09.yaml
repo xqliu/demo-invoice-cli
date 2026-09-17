@@ -1,0 +1,14 @@
+number: 2026-014
+client: Acme Robotics
+currency: USD
+tax_rate: 0.09
+items:
+  - description: Backend consulting (hours)
+    quantity: 12.5
+    unit_price: 120
+  - description: On-call retainer
+    quantity: 1
+    unit_price: 300
+  - description: Cloud credits passthrough
+    quantity: 3
+    unit_price: 19.99
