@@ -11,8 +11,11 @@ from .render import render_markdown
 
 
 def load(path: Path) -> Invoice:
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    items = [LineItem(**row) for row in data.get("items", [])]
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    rows = data.get("items")
+    if not rows:
+        raise ValueError(f"no items in {path}")
+    items = [LineItem(**row) for row in rows]
     return Invoice(
         number=str(data["number"]),
         client=data["client"],
@@ -27,7 +30,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("file", type=Path, help="invoice YAML")
     ap.add_argument("-o", "--output", type=Path, help="write Markdown here instead of stdout")
     args = ap.parse_args(argv)
-    md = render_markdown(load(args.file))
+    try:
+        inv = load(args.file)
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    md = render_markdown(inv)
     if args.output:
         args.output.write_text(md, encoding="utf-8")
     else:
